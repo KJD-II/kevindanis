@@ -20,7 +20,6 @@ phases:
       - cd build
       - ls -la
 artifacts:
-  #  get files within the dist folder only
   base-directory: 'website/build*'
   files:
     - '**/*'  
