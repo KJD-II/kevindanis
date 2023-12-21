@@ -22,6 +22,5 @@ phases:
 artifacts:
   #  get files within the dist folder only
   base-directory: 'website/build*'
-  discard-paths: yes
   files:
     - '**/*'  
