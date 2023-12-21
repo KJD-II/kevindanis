@@ -6,6 +6,7 @@ function App() {
       <header className="">
         <img src={logo} className="" alt="logo" />
         <p className="font-bold text-2xl">Kevin J Danis II</p>
+        <p className="font-bold text-2xl">December 2023</p>
       </header>
     </div>
   );
