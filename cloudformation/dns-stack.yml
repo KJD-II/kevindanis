@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >-
+  DNS Settings
+
+Resources:
+  route53RecordSetGroupForRootDomain:
+    Type: 'AWS::Route53::RecordSetGroup'
+    Properties:
+      HostedZoneId: Z07513651K3MNJFT6D77T
+      RecordSets:
+        - Name: kevindanis.com
+          Type: A 
+          AliasTarget:
+              DNSName: s3-website-us-east-1.amazonaws.com
+              HostedZoneId: Z3AQBSTGFYJSTF
+  route53RecordSetGroupForWWW:
+    Type: 'AWS::Route53::RecordSetGroup'
+    Properties:
+      HostedZoneId: Z07513651K3MNJFT6D77T
+      RecordSets:
+        - Name: www.kevindanis.com
+          Type: A
+          AliasTarget:
+              DNSName: s3-website-us-east-1.amazonaws.com 
+              HostedZoneId: Z3AQBSTGFYJSTF

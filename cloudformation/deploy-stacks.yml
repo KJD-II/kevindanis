@@ -92,8 +92,8 @@ Resources:
                   - s3:GetBucketLocation
                 Effect: Allow
                 Resource:
-                  - !Sub arn:aws:s3:::kevindanis-com-static-website
-                  - !Sub arn:aws:s3:::kevindanis-com-static-website/*
+                  - !Sub arn:aws:s3:::kevindanis.com
+                  - !Sub arn:aws:s3:::kevindanis.com/*
       Tags:
         - Key: deployment
           Value: !Ref paramTagName
@@ -134,7 +134,7 @@ Resources:
       Artifacts: 
         Type: S3
         Name: '/' 
-        Location: arn:aws:s3:::kevindanis-com-static-website
+        Location: arn:aws:s3:::kevindanis.com
         EncryptionDisabled: True
       LogsConfig:
         CloudWatchLogs:
