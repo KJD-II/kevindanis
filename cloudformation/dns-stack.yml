@@ -140,13 +140,13 @@ Resources:
     Type: 'AWS::Route53::RecordSetGroup'
     Properties:
       Comment: Route53 record for CloudFront distributions for root domain and subdomain
-      HostedZoneId: kevindanis.com.
+      HostedZoneId: Z07513651K3MNJFT6D77T
       RecordSets:
         - Name: 'www.kevindanis.com.'
           Type: A 
           AliasTarget:
               DNSName: !Ref cloudFrontDistributionForSubdomain
-              HostedZoneId: Z2FDTNDATAQYW2 
+              HostedZoneId: Z2FDTNDATAQYW2
         - Name: 'kevindanis.com.'
           Type: A 
           AliasTarget:
