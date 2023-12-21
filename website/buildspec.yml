@@ -1,0 +1,27 @@
+version: 0.2
+env:
+  variables:
+    APP_ENV: 'prod'
+phases:
+  install:
+    runtime-versions:
+       nodejs: 18
+    commands:
+      - cd $CODEBUILD_SRC_DIR/website
+      - npm install
+  build:
+    commands:
+      - echo Build process started now
+      - cd $CODEBUILD_SRC_DIR/website
+      - npm run build
+  post_build:
+    commands:
+      - echo Build process finished, upload artifacts to S3 bucket
+      - cd build
+      - ls -la
+artifacts:
+  #  get files within the dist folder only
+  base-directory: 'website/build*'
+  discard-paths: yes
+  files:
+    - '**/*'  

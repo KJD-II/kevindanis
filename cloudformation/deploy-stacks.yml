@@ -1,0 +1,150 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >-
+  CICD for Kevindanis.com Static Website
+
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: GitHub parameters
+        Parameters:
+          - paramPersonalGitHubAccessToken
+          - paramGitHubRepositoryUrl
+          - paramBuildSpecRelativePathInGitHub
+      - Label:
+          default: CodeBuild parameters
+        Parameters:
+          - paramCodeBuildProjectName
+          - paramS3BucketNameForRootDomain
+      - Label:
+          default: AWS tag parameters
+        Parameters:
+          - paramTagName
+
+## ==================== PARAMETERS ==================== ##
+Parameters:
+  paramPersonalGitHubAccessToken:
+    Description: Provide your personal GitHub access token for CodeBuild to access your GitHub repo
+    Type: String
+    MinLength: 10
+    ConstraintDescription: Personal GitHub access token is missing
+  paramGitHubRepositoryUrl:
+    Description: Provide your GitHub repository URL with source code for static website, e.g. https://github.com/my-account/my-repo-name.git
+    Type: String
+    Default: https://github.com/KJD-II/kevindanis.git
+  paramBuildSpecRelativePathInGitHub:
+    Description: Provide a relative path for BuildSpec yaml file in source code for static website 
+    Type: String
+    Default: website/buildspec.yml
+  paramCodeBuildProjectName:
+    Description: Specify CodeBuild project name
+    Type: String
+    MinLength: 10
+    MaxLength: 255
+    AllowedPattern: ^[a-zA-Z][-a-zA-Z0-9]*$
+    ConstraintDescription: Should contain uppercase, lowercase letters and digits from 0 to 9 only
+    Default: kevindanis-com-cloudbuild
+  paramS3BucketNameForRootDomain:
+    Description: Specify an existing S3 bucket name that hosts static website, e.g. 'example.com'
+    Type: String
+    Default: http://kevindanis-com-static-website.s3-website-us-east-1.amazonaws.com/
+  paramTagName:
+    Description: Specify a unique name for tag
+    Type: String
+    Default: deploying-kevindanis-com
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Must contain only ASCII characters
+
+Resources:
+  codeBuildProjectRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub role-for-${paramCodeBuildProjectName}
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+      Policies:
+        - PolicyName: !Sub policy-for-${paramCodeBuildProjectName}
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${paramCodeBuildProjectName}-cloud-watch-logs 
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${paramCodeBuildProjectName}-cloud-watch-logs:* 
+              - Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketAcl
+                  - s3:GetBucketLocation
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:s3:::${paramS3BucketNameForRootDomain}
+                  - !Sub arn:aws:s3:::${paramS3BucketNameForRootDomain}/*
+      Tags:
+        - Key: deployment
+          Value: !Ref paramTagName
+  
+  codeBuildSourceCredential:
+    Type: 'AWS::CodeBuild::SourceCredential'
+    Properties:
+      AuthType: PERSONAL_ACCESS_TOKEN
+      ServerType: GITHUB
+      Token: !Ref paramPersonalGitHubAccessToken
+
+  codeBuildProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: !Ref paramCodeBuildProjectName
+      Description: CodeBuild project for automatically build of static website hosted on s3
+      Source:
+        Type: GITHUB
+        Location: !Ref paramGitHubRepositoryUrl
+        GitCloneDepth: 1
+        BuildSpec: !Ref paramBuildSpecRelativePathInGitHub
+        Auth:
+          Resource: !Ref codeBuildSourceCredential
+          Type: OAUTH
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+            - Type: HEAD_REF
+              Pattern: ^refs/heads/main
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+      ServiceRole: !Ref codeBuildProjectRole
+      TimeoutInMinutes: 5
+      Artifacts: 
+        Type: S3
+        Name: '/' 
+        Location: arn:aws:s3:::kevindanis-com-static-website
+        EncryptionDisabled: True
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: !Sub ${paramCodeBuildProjectName}-cloud-watch-logs
+      Tags:
+        - Key: deployment
+          Value: !Ref paramTagName
+
+Outputs:
+  outputCodeBuildProject:
+    Description: CodeBuild project name
+    Value: !Ref codeBuildProject

@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  kevindanis.com Static Website  
+
+Parameters:
+  paramBucketName:
+    Description: Specify a unique name for S3 bucket that will host static website
+    Type: String
+    Default: kevindanis-com-static-website
+    AllowedPattern: "(?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+    ConstraintDescription: Bucket names must be between 3 (min) and 63 (max) characters long, can consist only of lowercase letters, numbers, dots, and hyphens, must begin and end with a letter or number, etc. 
+  paramTagName:
+    Description: Specify a unique name for tag
+    Type: String
+    Default: kevindanis_com
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Must contain only ASCII characters
+
+Resources:
+  
+  websiteHostingBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: !Ref paramBucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      VersioningConfiguration:
+        Status: Enabled
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      Tags:
+        - Key: deployment
+          Value:  !Ref paramTagName
+
+  websiteBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref websiteHostingBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref websiteHostingBucket
+                - /*
+
+Outputs:
+  outputWebsiteURL:
+    Value: !GetAtt 
+      - websiteHostingBucket
+      - WebsiteURL
+    Description: Static website URL
