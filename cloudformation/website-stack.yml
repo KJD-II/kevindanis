@@ -2,58 +2,32 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   kevindanis.com Static Website  
 
-Parameters:
-  paramBucketName:
-    Description: Specify a unique name for S3 bucket that will host static website
-    Type: String
-    Default: kevindanis.com
-  paramTagName:
-    Description: Specify a unique name for tag
-    Type: String
-    Default: kevindanis_com
-    AllowedPattern: "[\\x20-\\x7E]*"
-    ConstraintDescription: Must contain only ASCII characters
-
 Resources:
-  
+  S3BucketForRoot:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain # keep S3 bucket when its stack is deleted
+    Properties:
+      BucketName: kevindanis.com # use the name of your domain, such as example.com
+      WebsiteConfiguration:
+        RedirectAllRequestsTo: # Configure the bucket to route traffic to the subdomain bucket
+          HostName: !Ref websiteHostingBucket
+          Protocol: https
+      AccessControl: BucketOwnerFullControl
+
   websiteHostingBucket:
     Type: 'AWS::S3::Bucket'
     DeletionPolicy: Delete
     Properties:
-      BucketName: !Ref paramBucketName
+      BucketName: www.kevindanis.com
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
       VersioningConfiguration:
         Status: Enabled
-      OwnershipControls:
-        Rules:
-          - ObjectOwnership: ObjectWriter
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: false
-        RestrictPublicBuckets: false
+      AccessControl: BucketOwnerFullControl
       Tags:
         - Key: deployment
-          Value:  !Ref paramTagName
-
-  websiteBucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket: !Ref websiteHostingBucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Sid: PublicReadForGetBucketObjects
-            Effect: Allow
-            Principal: '*'
-            Action: 's3:GetObject'
-            Resource: !Join 
-              - ''
-              - - 'arn:aws:s3:::'
-                - !Ref websiteHostingBucket
-                - /*
+          Value:  kevindanis_com
 
 Outputs:
   outputWebsiteURL:

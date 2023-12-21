@@ -1,26 +1,154 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Description: >-
-  DNS Settings
+  DNS CloudFront and SSL Settings
 
 Resources:
-  route53RecordSetGroupForRootDomain:
+  SSLCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: kevindanis.com
+      SubjectAlternativeNames:
+        - '*.kevindanis.com'
+      DomainValidationOptions:
+        - DomainName: kevindanis.com
+          HostedZoneId: Z07513651K3MNJFT6D77T
+      ValidationMethod: DNS
+
+  cloudFrontOAI:
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: 'OAI for S3 origins'
+
+  cloudFrontDistributionForSubdomain:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Comment: CloudFront distribution points to S3 bucket for subdomain
+        Origins: 
+          - DomainName: 'www.kevindanis.com.s3.us-east-1.amazonaws.com'
+            Id: 'S3Origin-www-kevindanis-com'
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${cloudFrontOAI}'
+        Aliases: 
+          - www.kevindanis.com
+        CustomErrorResponses:
+          - ErrorCode: 403 
+            ResponseCode: 404 
+            ResponsePagePath: '/error.html' 
+            ErrorCachingMinTTL: 60 
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          DefaultTTL: 3600
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          MaxTTL: 86400
+          MinTTL: 60
+          TargetOriginId: 'S3Origin-www-kevindanis-com'
+          ViewerProtocolPolicy: 'redirect-to-https' 
+        DefaultRootObject: 'index.html' 
+        Enabled: true # 
+        HttpVersion: http2 
+        PriceClass: PriceClass_All
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SSLCertificate
+          SslSupportMethod: sni-only
+
+  cloudFrontDistributionForRootDomain:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Comment: CloudFront distribution points to S3 bucket for root domain
+        Origins: 
+          - DomainName: !Sub 'kevindanis.com.s3-website-${AWS::Region}.amazonaws.com' 
+            Id: 'RedirectS3Origin-kevindanis.com' 
+            CustomOriginConfig:
+              HTTPPort: 80 
+              HTTPSPort: 443 
+              OriginProtocolPolicy: 'http-only' 
+        Aliases: 
+          - 'kevindanis.com'
+        CustomErrorResponses:
+          - ErrorCode: 403 
+            ResponseCode: 404 
+            ResponsePagePath: '/error.html' 
+            ErrorCachingMinTTL: 60 
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          DefaultTTL: 3600
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          MaxTTL: 86400
+          MinTTL: 60 
+          TargetOriginId: 'RedirectS3Origin-kevindanis.com'
+          ViewerProtocolPolicy: 'redirect-to-https'
+        DefaultRootObject: 'index.html' 
+        Enabled: true 
+        HttpVersion: http2 
+        PriceClass: PriceClass_All
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SSLCertificate
+          SslSupportMethod: sni-only
+      Tags:
+        - Key: deployment
+          Value: kevindanis_com
+
+  policyForS3BucketForSubdomain:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: www.kevindanis.com
+      PolicyDocument:
+        Statement:
+        - Action: 's3:GetObject'
+          Effect: Allow
+          Resource: 'arn:aws:s3:::www.kevindanis.com/*'
+          Principal:
+            CanonicalUser: !GetAtt cloudFrontOAI.S3CanonicalUserId
+        - Sid: AllowSSLRequestsOnly 
+          Effect: Deny
+          Principal: '*'
+          Action: 's3:*'
+          Resource:
+          - 'arn:aws:s3:::www.kevindanis.com'
+          - 'arn:aws:s3:::www.kevindanis.com/*'
+          Condition:
+            Bool:
+              'aws:SecureTransport': false
+ 
+  Route53RecordSetGroup:
     Type: 'AWS::Route53::RecordSetGroup'
     Properties:
-      HostedZoneId: Z07513651K3MNJFT6D77T
+      Comment: Route53 record for CloudFront distributions for root domain and subdomain
+      HostedZoneId: kevindanis.com.
       RecordSets:
-        - Name: kevindanis.com
+        - Name: 'www.kevindanis.com.'
           Type: A 
           AliasTarget:
-              DNSName: s3-website-us-east-1.amazonaws.com
-              HostedZoneId: Z3AQBSTGFYJSTF
-  route53RecordSetGroupForWWW:
-    Type: 'AWS::Route53::RecordSetGroup'
-    Properties:
-      HostedZoneId: Z07513651K3MNJFT6D77T
-      RecordSets:
-        - Name: www.kevindanis.com
-          Type: A
+              DNSName: !Ref cloudFrontDistributionForSubdomain
+              HostedZoneId: Z2FDTNDATAQYW2 
+        - Name: 'kevindanis.com.'
+          Type: A 
           AliasTarget:
-              DNSName: s3-website-us-east-1.amazonaws.com 
-              HostedZoneId: Z3AQBSTGFYJSTF
+              DNSName: !Ref cloudFrontDistributionForRootDomain
+              HostedZoneId: Z2FDTNDATAQYW2
