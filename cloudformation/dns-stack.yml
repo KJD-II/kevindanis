@@ -81,8 +81,8 @@ Resources:
           - 'kevindanis.com'
         CustomErrorResponses:
           - ErrorCode: 403 
-            ResponseCode: 404 
-            ResponsePagePath: '/error.html' 
+            ResponseCode: 200 
+            ResponsePagePath: '/index.html' 
             ErrorCachingMinTTL: 60 
         DefaultCacheBehavior:
           AllowedMethods:
