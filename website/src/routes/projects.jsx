@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState}from 'react';
 
 const bestSellersLinks = [
 <a target="_blank" href="https://www.amazon.com/b?_encoding=UTF8&tag=kjdii-20&linkCode=ur2&linkId=29ab19e698d285fbc261a7973ca1445f&camp=1789&creative=9325&node=133140011">Kindle</a>,
@@ -22,26 +22,54 @@ const techGadgetsLinks = [
 
 
 
+
+
 const Projects = () => {
+    const [url, setUrl] = useState("");
+    const [affiliateTag, setAffiliateTag] = useState("kjdii-20");
+    const [affiliateLink, setAffiliateLink] = useState("");
+
+    const handlePaste = (evt) => {
+        evt.preventDefault();
+        const asinReg=/(?:[/dp/]|$)([A-Z0-9]{10})/g;
+        const paste = evt.target.value
+        const asin = paste.match(asinReg);
+        if (asin) {
+            setAffiliateLink(`https://www.amazon.com/dp${asin[0]}?tag=${affiliateTag}`);
+        }
+        
+      };
+
     return (
         <div className="flex justify-center w-full h-full bg-gray-200 antialiased">
 
             <div className="w-2/3 mb-10">
                 <div className='my-5 mx-5'>
+                    <input className='w-full p-3 rounded-xl shadow-lg' type="text" placeholder="Paste Amazon Link Here" onChange={handlePaste} />
+                </div>
+                <div className='my-5 mx-5 flex-1 text-center'>
+                    
+                        {affiliateLink === "" ? "Paste an Amazon link above to get started!" : <p>Here is your <span><a className="font-bold hover:text-red-400" target="_blank" href={affiliateLink}>Generated Link</a></span></p>}
+                        {affiliateLink === "" ? "" : <p className='text-xs opacity-50'>A tab will opent to: {affiliateLink}</p>}
+                    
 
-                <div className='p-3 flex justify-center content-center bg-white  border border-gray-400 rounded-xl shadow-lg'>
+                
+                </div>
+                <div className=' m-5 p-3 flex justify-center content-center bg-white  border border-gray-400 rounded-xl shadow-lg'>
                 <p className='text-center'>🚀 Blast Off to Benefits! Just so you know, when you click on our links and make a purchase, something amazing happens. As an Amazon Associate, we earn from those qualifying purchases. That's right – every time you buy something, you're not just getting something awesome; you're also helping us keep the lights on (and maybe even fund our next interstellar mission to Planet Bargain!).</p>
                 </div>
-                </div>
             <div className='grid grid-cols-3 gap-3 bg-white rounded-xl'>
+                <div className='col-span-3'>
+
+                </div>
 
                 <div className='col-span-3 m-10'>
                 <div className='p-3 flex justify-center content-center  ring-2 ring-gray-400 rounded-xl shadow-lg'>
                 <p className='text-center'>🚀 Fasten Your Seatbelts! We're on a thrilling journey through <span className='font-bold italic'>Amazon's best sellers</span>, and you're invited! Whether you're a tech geek, a home guru, a super parent, or an outdoor enthusiast, we've got something that'll make you say, "Wow, I need this!"</p>
                 </div>
                 </div>
-                {bestSellersLinks.map((link) => (
-                    <div className=' text-gray-500 shadow-lg m-5 p-5 ring-2 rounded-xl text-center bg-white ring-gray-200 hover:ring-red-400 font-bold hover:text-red-400'>
+                {bestSellersLinks.map((link, idx) => (
+                    <div key={idx} className=' text-gray-500 shadow-lg m-5 p-5 ring-2 rounded-xl text-center bg-white ring-gray-200 hover:ring-red-400 font-bold hover:text-red-400'>
                     {link}
                     </div>
                 ))}
@@ -50,8 +78,8 @@ const Projects = () => {
                 <p className='text-center'>🔍 Discover the Best in Technology: Are you ready to upgrade your <span className='font-bold italic'>Tech</span> game? Look no further! We've scoured Amazon to bring you the latest and greatest in gadgets. From smartphones that practically read your mind to laptops that are lighter than your weekend feels, we've got tech that'll make your friends green with envy.</p>
                 </div>
                 </div>
-                {techGadgetsLinks.map((link) => (
-                    <div className=' text-gray-500 shadow-lg m-5 p-5 ring-2 rounded-xl text-center bg-white ring-gray-200 hover:ring-red-400 font-bold hover:text-red-400'>
+                {techGadgetsLinks.map((link, idx) => (
+                    <div key={idx} className=' text-gray-500 shadow-lg m-5 p-5 ring-2 rounded-xl text-center bg-white ring-gray-200 hover:ring-red-400 font-bold hover:text-red-400'>
                     {link}
                     </div>
                 ))}
