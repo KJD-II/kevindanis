@@ -10,7 +10,7 @@ import {
 
 import App from "./routes/root";
 import Experience from "./routes/experience";
-import About from "./routes/about";
+import Projects from "./routes/projects";
 import Dashboard from "./routes/dashboard";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -20,15 +20,15 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/about" replace />,
+        element: <Navigate to="/projects" replace />,
       },
       {
         path: "experience",
         element: <Experience />,
       },
       {
-        path: "about",
-        element: <About />,
+        path: "projects",
+        element: <Projects />,
       },
       { path: "dashboard", element: <Dashboard /> },
     ],

@@ -124,7 +124,7 @@ Resources:
           Effect: Allow
           Resource: 
             - 'arn:aws:s3:::www.kevindanis.com/*'
-            - 'arn:aws:s3:::www.kevindanis.com/about'
+            - 'arn:aws:s3:::www.kevindanis.com/projects'
             - 'arn:aws:s3:::www.kevindanis.com'
           Principal:
             CanonicalUser: !GetAtt cloudFrontOAI.S3CanonicalUserId
