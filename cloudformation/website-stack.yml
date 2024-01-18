@@ -27,7 +27,7 @@ Resources:
       AccessControl: BucketOwnerFullControl
       Tags:
         - Key: deployment
-          Value:  kevindanis_com
+          Value: kevindanis_com
 
 Outputs:
   outputWebsiteURL:
