@@ -25,7 +25,7 @@ export default function Nav(props) {
                         >
                             Projects
                         </Link>
-                        <Link
+                        {/* <Link
                             to="/experience"
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
@@ -36,7 +36,7 @@ export default function Nav(props) {
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
                             Dashboard
-                        </Link>
+                        </Link> */}
                     </div>
                     <div className='w-16 flex justify-center'>
                         <button onClick={toggleDarkMode} className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
