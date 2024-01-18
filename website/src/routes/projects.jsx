@@ -35,7 +35,7 @@ const Projects = () => {
         const paste = evt.target.value
         const asin = paste.match(asinReg);
         if (asin) {
-            setAffiliateLink(`https://www.amazon.com/dp${asin[0]}?tag=${affiliateTag}`);
+            setAffiliateLink(`https://www.amazon.com/dp${asin[0]}/ref=nosim?tag=${affiliateTag}`);
         }
         
       };
