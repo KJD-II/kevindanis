@@ -145,6 +145,13 @@ export default function Projects() {
   const [affiliateTag, setAffiliateTag] = useState("kjdii-20");
   const [affiliateLink, setAffiliateLink] = useState("");
   const dateVariable = new Date();
+  const today = new Date(),
+    date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
 
   const handlePaste = (evt) => {
     evt.preventDefault();
@@ -257,7 +264,8 @@ export default function Projects() {
                     <dt className="text-gray-500">Updated</dt>
                     <dd className="flex items-start gap-x-2">
                       <div className="font-medium text-gray-500 text-xs my-auto">
-                        {category.meta.updated}
+                        {/* {category.meta.updated} */}
+                        {date}
                       </div>
                     </dd>
                   </div>
@@ -315,7 +323,7 @@ export default function Projects() {
                     <dd className="flex items-start gap-x-2">
                       <div className="font-medium text-gray-500 text-xs my-auto">
                         {/* {category.meta.updated} */}
-                        {dateVariable.getDate()}
+                        {date}
                       </div>
                     </dd>
                   </div>
