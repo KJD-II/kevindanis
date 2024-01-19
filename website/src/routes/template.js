@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { ArrowLeftIcon } from "@heroicons/react/20/solid";
+import {
+  EllipsisHorizontalIcon,
+  ArrowLeftIcon,
+} from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 
 const bestSellers = [
@@ -141,7 +144,12 @@ const techGadgetsLinks = [
   },
 ];
 
-export default function Projects() {
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+export default function Example() {
+  const [url, setUrl] = useState("");
   const [affiliateTag, setAffiliateTag] = useState("kjdii-20");
   const [affiliateLink, setAffiliateLink] = useState("");
 
@@ -158,7 +166,7 @@ export default function Projects() {
   };
 
   return (
-    <div className="bg-white">
+    <>
       <div className="p-3 flex justify-center content-center  rounded-xl  text-gray-600 mt-5 mx-5 mb-10">
         <p className="text-center">
           🚀 Blast Off to Benefits! Just so you know, when you click on our
@@ -323,6 +331,6 @@ export default function Projects() {
           ))}
         </ul>
       </div>
-    </div>
+    </>
   );
 }

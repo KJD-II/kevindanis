@@ -12,6 +12,7 @@ import App from "./routes/root";
 import Experience from "./routes/experience";
 import Projects from "./routes/projects";
 import Dashboard from "./routes/dashboard";
+import Example from "./routes/template";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
