@@ -144,6 +144,7 @@ const techGadgetsLinks = [
 export default function Projects() {
   const [affiliateTag, setAffiliateTag] = useState("kjdii-20");
   const [affiliateLink, setAffiliateLink] = useState("");
+  const dateVariable = new Date();
 
   const handlePaste = (evt) => {
     evt.preventDefault();
@@ -211,8 +212,8 @@ export default function Projects() {
         </div>
       </div>
       <div className=" mx-5 my-5 p-3 flex-1 justify-center content-center  ring-2 ring-gray-200 rounded-xl shadow-lg">
-        <p className="text-center">
-          Fasten Your Seatbelts! We're on a thrilling journey through{" "}
+        <p className="text-center text-gray-600">
+          🛵 Fasten Your Seatbelts! We're on a thrilling journey through{" "}
           <span className="font-bold italic">Amazon's best sellers</span>, and
           you're invited! Whether you're a tech geek, a home guru, a super
           parent, or an outdoor enthusiast, we've got something that'll make you
@@ -266,8 +267,8 @@ export default function Projects() {
           ))}
         </ul>
       </div>
-      <div className=" mx-5 my-5 p-3 flex-1 justify-center content-center  ring-2 ring-gray-200 rounded-xl shadow-lg">
-        <p className="text-center">
+      <div className=" mx-5 my-8 p-3 flex-1 justify-center content-center  ring-2 ring-gray-200 rounded-xl shadow-lg">
+        <p className="text-center text-gray-600">
           🔍 Discover the Best in Technology: Are you ready to upgrade your{" "}
           <span className="font-bold italic">Tech</span> game? Look no further!
           We've scoured Amazon to bring you the latest and greatest in gadgets.
@@ -313,7 +314,8 @@ export default function Projects() {
                     <dt className="text-gray-500">Updated</dt>
                     <dd className="flex items-start gap-x-2">
                       <div className="font-medium text-gray-500 text-xs my-auto">
-                        {category.meta.updated}
+                        {/* {category.meta.updated} */}
+                        {dateVariable.getDate()}
                       </div>
                     </dd>
                   </div>
