@@ -142,9 +142,10 @@ const techGadgetsLinks = [
 ];
 
 export default function Projects() {
+  const [url, setUrl] = useState("");
   const [affiliateTag, setAffiliateTag] = useState("kjdii-20");
   const [affiliateLink, setAffiliateLink] = useState("");
-  const dateVariable = new Date();
+
   const today = new Date(),
     date =
       today.getFullYear() +
@@ -155,6 +156,7 @@ export default function Projects() {
 
   const handlePaste = (evt) => {
     evt.preventDefault();
+    setUrl(evt.target.value);
     const asinReg = /(?:[/dp/]|$)([A-Z0-9]{10})/g;
     const paste = evt.target.value;
     const asin = paste.match(asinReg);
@@ -183,7 +185,7 @@ export default function Projects() {
             className="w-full p-3 rounded-xl shadow-lg border border-gray-200 text-sm"
             type="text"
             placeholder="Paste Amazon Link Here"
-            value={affiliateLink}
+            value={url}
             onChange={handlePaste}
           />
           {affiliateLink === "" ? (
@@ -195,6 +197,7 @@ export default function Projects() {
               className="w-20 p-3 rounded-xl shadow-lg border border-gray-200 text-sm mx-3"
               onClick={() => {
                 setAffiliateLink("");
+                setUrl("");
               }}
             >
               RESET
