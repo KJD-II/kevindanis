@@ -5,11 +5,11 @@ Description: >-
 Resources:
   S3BucketForRoot:
     Type: 'AWS::S3::Bucket'
-    DeletionPolicy: Retain # keep S3 bucket when its stack is deleted
+    DeletionPolicy: Retain
     Properties:
-      BucketName: kevindanis.com # use the name of your domain, such as example.com
+      BucketName: kevindanis.com 
       WebsiteConfiguration:
-        RedirectAllRequestsTo: # Configure the bucket to route traffic to the subdomain bucket
+        RedirectAllRequestsTo: 
           HostName: !Ref websiteHostingBucket
           Protocol: https
       AccessControl: BucketOwnerFullControl
